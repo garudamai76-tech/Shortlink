@@ -3,191 +3,192 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SHORTCRT - Custom URL Shortener</title>
+  <title>SHORTCRT - URL Shortener</title>
   <style>
     body { font-family: sans-serif; background-color: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; color: #f8fafc; }
     .card { background: #1e293b; padding: 2rem; border-radius: 16px; width: 100%; max-width: 450px; border: 1px solid #334155; box-sizing: border-box; }
     h2 { text-align: center; color: #38bdf8; margin-top: 0; margin-bottom: 1.5rem; }
-    .tabs { display: flex; gap: 10px; margin-bottom: 1.2rem; }
-    .tab-btn { flex: 1; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; }
-    .tab-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
+    .menu-tabs { display: flex; gap: 10px; margin-bottom: 1.2rem; }
+    .btn-tab { flex: 1; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; }
+    .btn-tab.active { background: #3b82f6; color: white; border-color: #3b82f6; }
     label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
     input, select, textarea { width: 100%; padding: 0.8rem; margin-bottom: 1.2rem; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; box-sizing: border-box; outline: none; }
     textarea { resize: vertical; min-height: 90px; }
-    .btn { width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
-    .btn:hover { background: #2563eb; }
-    #result { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; word-break: break-all; }
-    .success { background: #064e3b; color: #ecfdf5; border: 1px solid #059669; }
-    .error { background: #7f1d1d; color: #fef2f2; border: 1px solid #dc2626; }
-    .short-item { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
-    a.short-link { color: #38bdf8; font-weight: bold; text-decoration: none; }
-    .copy-btn { background: #334155; border: none; padding: 4px 10px; border-radius: 4px; color: #f8fafc; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; margin-left: 8px; }
+    .main-btn { width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .main-btn:hover { background: #2563eb; }
+    #resultBox { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; word-break: break-all; }
+    .box-success { background: #064e3b; color: #ecfdf5; border: 1px solid #059669; }
+    .box-error { background: #7f1d1d; color: #fef2f2; border: 1px solid #dc2626; }
+    .link-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
+    a.link-url { color: #38bdf8; font-weight: bold; text-decoration: none; }
+    .btn-copy { background: #334155; border: none; padding: 4px 10px; border-radius: 4px; color: #f8fafc; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; margin-left: 8px; }
   </style>
 </head>
 <body>
-  <div class="card" id="appContainer">
+  <div class="card" id="appMain">
     <h2>SHORTCRT</h2>
     
-    <div class="tabs">
-      <div id="tabSingle" class="tab-btn active" onclick="switchTab('single')">🔗 Single URL</div>
-      <div id="tabBulk" class="tab-btn" onclick="switchTab('bulk')">📦 Bulk URL</div>
+    <!-- TOMBOL TAB MENU (SINGLE & BULK) -->
+    <div class="menu-tabs">
+      <div id="tSingle" class="btn-tab active" onclick="changeTab('single')">🔗 Single URL</div>
+      <div id="tBulk" class="btn-tab" onclick="changeTab('bulk')">📦 Bulk URL</div>
     </div>
 
     <label>Pilih Domain</label>
-    <select id="selectedDomain">
+    <select id="domainChoice">
       <option value="">Domain Utama (GitHub)</option>
       <option value="mon.croot.site">mon.croot.site</option>
       <option value="aspn.croot.site">aspn.croot.site</option>
       <option value="go.croot.site">go.croot.site</option>
     </select>
 
-    <div id="singleSection">
+    <div id="formSingle">
       <label>Custom Alias (Opsional)</label>
-      <input type="text" id="customAlias" placeholder="alias-unik">
+      <input type="text" id="inputAlias" placeholder="alias-unik">
       <label>Paste Long URL</label>
-      <input type="url" id="longUrl" placeholder="https://...">
+      <input type="url" id="inputUrl" placeholder="https://...">
     </div>
 
-    <div id="bulkSection" style="display: none;">
+    <div id="formBulk" style="display: none;">
       <label>Paste Long URLs (1 URL per baris)</label>
-      <textarea id="bulkUrls" placeholder="https://contoh.com/1&#10;https://contoh.com/2"></textarea>
+      <textarea id="inputBulkUrls" placeholder="https://contoh.com/1&#10;https://contoh.com/2"></textarea>
     </div>
 
-    <button class="btn" onclick="handleCreate()">Create Link</button>
-    <div id="result"></div>
+    <button class="main-btn" onclick="generateLink()">Create Link</button>
+    <div id="resultBox"></div>
   </div>
 
   <script>
-    let currentMode = 'single';
+    let modeAktif = 'single';
 
-    function switchTab(mode) {
-      currentMode = mode;
-      document.getElementById('tabSingle').className = mode === 'single' ? 'tab-btn active' : 'tab-btn';
-      document.getElementById('tabBulk').className = mode === 'bulk' ? 'tab-btn active' : 'tab-btn';
-      document.getElementById('singleSection').style.display = mode === 'single' ? 'block' : 'none';
-      document.getElementById('bulkSection').style.display = mode === 'bulk' ? 'block' : 'none';
-      document.getElementById('result').style.display = 'none';
+    function changeTab(tipe) {
+      modeAktif = tipe;
+      document.getElementById('tSingle').className = tipe === 'single' ? 'btn-tab active' : 'btn-tab';
+      document.getElementById('tBulk').className = tipe === 'bulk' ? 'btn-tab active' : 'btn-tab';
+      document.getElementById('formSingle').style.display = tipe === 'single' ? 'block' : 'none';
+      document.getElementById('formBulk').style.display = tipe === 'bulk' ? 'block' : 'none';
+      document.getElementById('resultBox').style.display = 'none';
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-      const hash = window.location.hash.substring(1);
-      if (hash) {
-        const dataString = localStorage.getItem('SHORTLINK_' + hash);
-        if (dataString) {
-          let longUrl = dataString;
+      const hashKey = window.location.hash.substring(1);
+      if (hashKey) {
+        const dataSimpan = localStorage.getItem('SHORTLINK_' + hashKey);
+        if (dataSimpan) {
+          let tujuanUrl = dataSimpan;
           try {
-            const parsed = JSON.parse(dataString);
-            longUrl = parsed.longUrl || dataString;
+            const parsed = JSON.parse(dataSimpan);
+            tujuanUrl = parsed.longUrl || dataSimpan;
           } catch(e) {}
 
-          const adScriptsList = [
+          const adList = [
             "https://www.profitableratecpmnetwork.com/hh55phupz7?key=035891703dff41ba6e0911050a5989af",
             "https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b"
           ];
-          const randomAdUrl = adScriptsList[Math.floor(Math.random() * adScriptsList.length)];
+          const pilihIklan = adList[Math.floor(Math.random() * adList.length)];
           
-          const adScript = document.createElement('script');
-          adScript.src = randomAdUrl;
-          document.head.append(adScript);
+          const scr = document.createElement('script');
+          scr.src = pilihIklan;
+          document.head.append(scr);
 
-          document.getElementById('appContainer').innerHTML = `
+          document.getElementById('appMain').innerHTML = `
             <div style="text-align: center;">
               <h3 style="color: #f8fafc; margin-bottom: 10px;">Menyiapkan Tautan Anda...</h3>
               <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Silakan tunggu sebentar...</p>
-              <a id="proceedBtn" href="#" style="display: block; width: 100%; padding: 12px; background: #3b82f6; color: white; border-radius: 8px; font-weight: bold; text-decoration: none;">
-                Lanjutkan ke Tujuan (<span id="countdown">3</span>)
+              <a id="btnLanjut" href="#" style="display: block; width: 100%; padding: 12px; background: #3b82f6; color: white; border-radius: 8px; font-weight: bold; text-decoration: none;">
+                Lanjutkan ke Tujuan (<span id="hitungMundur">3</span>)
               </a>
             </div>
           `;
 
-          let timeLeft = 3;
-          const countdownEl = document.getElementById('countdown');
-          const proceedBtn = document.getElementById('proceedBtn');
+          let sisaWaktu = 3;
+          const elHitung = document.getElementById('hitungMundur');
+          const elBtn = document.getElementById('btnLanjut');
 
-          const timer = setInterval(() => {
-            timeLeft--;
-            if (timeLeft > 0) {
-              countdownEl.textContent = timeLeft;
+          const tInterval = setInterval(() => {
+            sisaWaktu--;
+            if (sisaWaktu > 0) {
+              elHitung.textContent = sisaWaktu;
             } else {
-              clearInterval(timer);
-              countdownEl.parentElement.textContent = "Klik Disini untuk Melanjutkan";
+              clearInterval(tInterval);
+              elHitung.parentElement.textContent = "Klik Disini untuk Melanjutkan";
             }
           }, 1000);
 
-          proceedBtn.addEventListener('click', function(e) {
+          elBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            window.location.href = longUrl;
+            window.location.href = tujuanUrl;
           });
         }
       }
     });
 
-    function handleCreate() {
-      const selectedDomain = document.getElementById('selectedDomain').value;
-      const resultDiv = document.getElementById('result');
-      resultDiv.style.display = 'none';
+    function generateLink() {
+      const domPilihan = document.getElementById('domainChoice').value;
+      const boxRes = document.getElementById('resultBox');
+      boxRes.style.display = 'none';
 
-      let baseUrl = selectedDomain ? (selectedDomain.startsWith('http') ? selectedDomain : 'https://' + selectedDomain) : window.location.origin + window.location.pathname;
-      baseUrl = baseUrl.replace(/\/$/, '');
+      let baseDomain = domPilihan ? (domPilihan.startsWith('http') ? domPilihan : 'https://' + domPilihan) : window.location.origin + window.location.pathname;
+      baseDomain = baseDomain.replace(/\/$/, '');
 
-      if (currentMode === 'single') {
-        const longUrl = document.getElementById('longUrl').value.trim();
-        const customAlias = document.getElementById('customAlias').value.trim();
+      if (modeAktif === 'single') {
+        const urlAsli = document.getElementById('inputUrl').value.trim();
+        const aliasCustom = document.getElementById('inputAlias').value.trim();
 
-        if (!longUrl) {
-          resultDiv.className = 'error';
-          resultDiv.style.display = 'block';
-          resultDiv.textContent = "Masukkan URL terlebih dahulu!";
+        if (!urlAsli) {
+          boxRes.className = 'box-error';
+          boxRes.style.display = 'block';
+          boxRes.textContent = "Masukkan URL terlebih dahulu!";
           return;
         }
 
-        let alias = customAlias ? customAlias.replace(/\s+/g, '-') : Math.random().toString(36).substring(2, 8);
-        localStorage.setItem('SHORTLINK_' + alias, longUrl);
-        let shortUrl = baseUrl + '/#' + alias;
+        let aliasFinal = aliasCustom ? aliasCustom.replace(/\s+/g, '-') : Math.random().toString(36).substring(2, 8);
+        localStorage.setItem('SHORTLINK_' + aliasFinal, urlAsli);
+        let hasilShort = baseDomain + '/#' + aliasFinal;
 
-        resultDiv.className = 'success';
-        resultDiv.style.display = 'block';
-        resultDiv.innerHTML = `
+        boxRes.className = 'box-success';
+        boxRes.style.display = 'block';
+        boxRes.innerHTML = `
           <div style="margin-bottom: 5px; font-weight: bold;">Berhasil Dibuat:</div>
-          <div class="short-item">
-            <a class="short-link" href="${shortUrl}" target="_blank">${shortUrl}</a>
-            <button class="copy-btn" onclick="navigator.clipboard.writeText('${shortUrl}')">Copy</button>
+          <div class="link-row">
+            <a class="link-url" href="${hasilShort}" target="_blank">${hasilShort}</a>
+            <button class="btn-copy" onclick="navigator.clipboard.writeText('${hasilShort}')">Copy</button>
           </div>
         `;
       } else {
-        const bulkText = document.getElementById('bulkUrls').value.trim();
-        if (!bulkText) {
-          resultDiv.className = 'error';
-          resultDiv.style.display = 'block';
-          resultDiv.textContent = "Masukkan daftar URL (1 URL per baris)!";
+        const teksBulk = document.getElementById('inputBulkUrls').value.trim();
+        if (!teksBulk) {
+          boxRes.className = 'box-error';
+          boxRes.style.display = 'block';
+          boxRes.textContent = "Masukkan daftar URL (1 URL per baris)!";
           return;
         }
 
-        const lines = bulkText.split('\n');
-        let htmlOutput = '<div style="margin-bottom: 8px; font-weight: bold;">Daftar Berhasil Dibuat:</div>';
-        let count = 0;
+        const barisList = teksBulk.split('\n');
+        let htmlRakit = '<div style="margin-bottom: 8px; font-weight: bold;">Daftar Berhasil Dibuat:</div>';
+        let totalSukses = 0;
 
-        lines.forEach(line => {
-          let url = line.trim();
-          if (url) {
-            let alias = Math.random().toString(36).substring(2, 8);
-            localStorage.setItem('SHORTLINK_' + alias, url);
-            let shortUrl = baseUrl + '/#' + alias;
+        barisList.forEach(baris => {
+          let u = baris.trim();
+          if (u) {
+            let aliasRandom = Math.random().toString(36).substring(2, 8);
+            localStorage.setItem('SHORTLINK_' + aliasRandom, u);
+            let hasilShort = baseDomain + '/#' + aliasRandom;
             
-            htmlOutput += `
-              <div class="short-item">
-                <a class="short-link" href="${shortUrl}" target="_blank">${shortUrl}</a>
-                <button class="copy-btn" onclick="navigator.clipboard.writeText('${shortUrl}')">Copy</button>
+            htmlRakit += `
+              <div class="link-row">
+                <a class="link-url" href="${hasilShort}" target="_blank">${hasilShort}</a>
+                <button class="btn-copy" onclick="navigator.clipboard.writeText('${hasilShort}')">Copy</button>
               </div>
             `;
-            count++;
+            totalSukses++;
           }
         });
 
-        if (count > 0) {
-          resultDiv.className = 'success';
-          resultDiv.style.display = 'block';
-          resultDiv.innerHTML = htmlOutput;
+        if (totalSukses > 0) {
+          boxRes.className = 'box-success';
+          boxRes.style.display = 'block';
+          boxRes.innerHTML = htmlRakit;
         }
       }
     }
