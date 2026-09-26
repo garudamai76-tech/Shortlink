@@ -5,19 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SHORTCRT - Custom URL Shortener</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; color: #f8fafc; }
-    .card { background: #1e293b; padding: 2rem; border-radius: 16px; width: 100%; max-width: 450px; border: 1px solid #334155; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    body { font-family: sans-serif; background-color: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; color: #f8fafc; }
+    .card { background: #1e293b; padding: 2rem; border-radius: 16px; width: 100%; max-width: 450px; border: 1px solid #334155; box-sizing: border-box; }
     h2 { text-align: center; color: #38bdf8; margin-top: 0; margin-bottom: 1.5rem; }
     .tabs { display: flex; gap: 10px; margin-bottom: 1.2rem; }
-    .tab-btn { flex: 1; padding: 8px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; }
+    .tab-btn { flex: 1; padding: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 6px; color: #94a3b8; font-weight: bold; cursor: pointer; text-align: center; }
     .tab-btn.active { background: #3b82f6; color: white; border-color: #3b82f6; }
     label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
-    input, select, textarea { width: 100%; padding: 0.8rem; margin-bottom: 1.2rem; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; box-sizing: border-box; outline: none; font-family: inherit; }
-    input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
+    input, select, textarea { width: 100%; padding: 0.8rem; margin-bottom: 1.2rem; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; box-sizing: border-box; outline: none; }
     textarea { resize: vertical; min-height: 90px; }
-    .btn { width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); transition: background 0.2s; }
+    .btn { width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
     .btn:hover { background: #2563eb; }
-    #result { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; word-break: break-all; max-height: 250px; overflow-y: auto; }
+    #result { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; word-break: break-all; }
     .success { background: #064e3b; color: #ecfdf5; border: 1px solid #059669; }
     .error { background: #7f1d1d; color: #fef2f2; border: 1px solid #dc2626; }
     .short-item { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
@@ -45,7 +44,6 @@
     <div id="singleSection">
       <label>Custom Alias (Opsional)</label>
       <input type="text" id="customAlias" placeholder="alias-unik">
-
       <label>Paste Long URL</label>
       <input type="url" id="longUrl" placeholder="https://...">
     </div>
@@ -71,7 +69,6 @@
       document.getElementById('result').style.display = 'none';
     }
 
-    // Skrip deteksi redirect iklan saat link ber-hash diklik
     window.addEventListener('DOMContentLoaded', () => {
       const hash = window.location.hash.substring(1);
       if (hash) {
@@ -97,7 +94,7 @@
             <div style="text-align: center;">
               <h3 style="color: #f8fafc; margin-bottom: 10px;">Menyiapkan Tautan Anda...</h3>
               <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Silakan tunggu sebentar...</p>
-              <a id="proceedBtn" href="#" style="display: block; width: 100%; padding: 12px; background: #3b82f6; color: white; border-radius: 8px; font-weight: bold; text-decoration: none; box-sizing: border-box;">
+              <a id="proceedBtn" href="#" style="display: block; width: 100%; padding: 12px; background: #3b82f6; color: white; border-radius: 8px; font-weight: bold; text-decoration: none;">
                 Lanjutkan ke Tujuan (<span id="countdown">3</span>)
               </a>
             </div>
@@ -121,13 +118,6 @@
             e.preventDefault();
             window.location.href = longUrl;
           });
-        } else {
-          document.getElementById('appContainer').innerHTML = `
-            <div style="text-align: center; color: #ef4444;">
-              <h3>Tautan Tidak Ditemukan</h3>
-              <p style="color: #94a3b8; font-size: 0.9rem;">Link pendek ini belum terdaftar di browser.</p>
-            </div>
-          `;
         }
       }
     });
@@ -147,43 +137,34 @@
         if (!longUrl) {
           resultDiv.className = 'error';
           resultDiv.style.display = 'block';
-          resultDiv.textContent = "Masukkan URL terlebih dahulu.";
+          resultDiv.textContent = "Masukkan URL terlebih dahulu!";
           return;
         }
 
         let alias = customAlias ? customAlias.replace(/\s+/g, '-') : Math.random().toString(36).substring(2, 8);
-        
-        if (localStorage.getItem('SHORTLINK_' + alias)) {
-          resultDiv.className = 'error';
-          resultDiv.style.display = 'block';
-          resultDiv.textContent = "Custom alias sudah digunakan, pilih yang lain.";
-          return;
-        }
-
         localStorage.setItem('SHORTLINK_' + alias, longUrl);
         let shortUrl = baseUrl + '/#' + alias;
 
         resultDiv.className = 'success';
         resultDiv.style.display = 'block';
         resultDiv.innerHTML = `
-          <div style="margin-bottom: 5px; font-weight: bold;">Tautan Berhasil Dibuat:</div>
+          <div style="margin-bottom: 5px; font-weight: bold;">Berhasil Dibuat:</div>
           <div class="short-item">
             <a class="short-link" href="${shortUrl}" target="_blank">${shortUrl}</a>
             <button class="copy-btn" onclick="navigator.clipboard.writeText('${shortUrl}')">Copy</button>
           </div>
         `;
-
       } else {
         const bulkText = document.getElementById('bulkUrls').value.trim();
         if (!bulkText) {
           resultDiv.className = 'error';
           resultDiv.style.display = 'block';
-          resultDiv.textContent = "Masukkan daftar URL terlebih dahulu (1 URL per baris).";
+          resultDiv.textContent = "Masukkan daftar URL (1 URL per baris)!";
           return;
         }
 
         const lines = bulkText.split('\n');
-        let htmlOutput = '<div style="margin-bottom: 8px; font-weight: bold;">Daftar Tautan Berhasil Dibuat:</div>';
+        let htmlOutput = '<div style="margin-bottom: 8px; font-weight: bold;">Daftar Berhasil Dibuat:</div>';
         let count = 0;
 
         lines.forEach(line => {
@@ -207,10 +188,6 @@
           resultDiv.className = 'success';
           resultDiv.style.display = 'block';
           resultDiv.innerHTML = htmlOutput;
-        } else {
-          resultDiv.className = 'error';
-          resultDiv.style.display = 'block';
-          resultDiv.textContent = "Tidak ada URL valid yang ditemukan.";
         }
       }
     }
