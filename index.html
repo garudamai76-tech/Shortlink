@@ -3,215 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SHORTCRT - Advanced Custom URL Shortener</title>
+  <title>SHORTCRT - Custom URL Shortener</title>
   <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; color: #f8fafc; }
-    .card { background: #1e293b; padding: 2rem; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); width: 100%; max-width: 500px; box-sizing: border-box; border: 1px solid #334155; }
-    .brand-logo { margin-top: 0; margin-bottom: 1.5rem; color: #38bdf8; text-align: center; font-size: 1.8rem; font-weight: 900; letter-spacing: -0.5px; display: flex; align-items: center; justify-content: center; gap: 8px; }
-    .brand-logo svg { width: 26px; height: 26px; fill: currentColor; }
-    
-    /* Tab Switcher */
-    .tab-container { display: flex; background: #0f172a; padding: 4px; border-radius: 10px; margin-bottom: 1.5rem; border: 1px solid #334155; }
-    .tab-btn { flex: 1; padding: 10px; text-align: center; background: transparent; border: none; color: #94a3b8; font-weight: 600; font-size: 0.9rem; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
-    .tab-btn.active { background: #334155; color: #f8fafc; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
-
-    .form-group { margin-bottom: 1.2rem; }
-    .row-group { display: flex; gap: 10px; }
-    .row-group .form-group { flex: 1; }
-    
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; color: #f8fafc; }
+    .card { background: #1e293b; padding: 2rem; border-radius: 16px; width: 100%; max-width: 450px; border: 1px solid #334155; box-sizing: border-box; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+    h2 { text-align: center; color: #38bdf8; margin-top: 0; margin-bottom: 1.5rem; }
     label { display: block; margin-bottom: 0.5rem; font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
-    input[type="url"], input[type="text"], select, textarea { width: 100%; padding: 0.8rem; border: 1px solid #334155; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; outline: none; transition: border-color 0.2s; font-family: inherit; background: #0f172a; color: #f8fafc; }
-    input:focus, select:focus, textarea:focus { border-color: #38bdf8; }
-    textarea { resize: vertical; min-height: 80px; }
-    
-    .advanced-toggle { background: #0f172a; border: 1px solid #334155; padding: 0.8rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; color: #94a3b8; display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
-    .advanced-content { display: none; background: #0f172a; border: 1px solid #334155; padding: 1rem; border-radius: 8px; margin-bottom: 1.2rem; }
-    .advanced-content.show { display: block; }
-    
-    .btn { width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-size: 1rem; font-weight: bold; cursor: pointer; transition: background 0.2s; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); }
+    input, select { width: 100%; padding: 0.8rem; margin-bottom: 1.2rem; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f8fafc; box-sizing: border-box; outline: none; font-family: inherit; }
+    input:focus, select:focus { border-color: #38bdf8; }
+    .btn { width: 100%; padding: 0.9rem; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4); transition: background 0.2s; }
     .btn:hover { background: #2563eb; }
-    
-    #result { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; word-wrap: break-word; }
+    #result { margin-top: 1.5rem; padding: 1rem; border-radius: 8px; display: none; word-break: break-all; }
     .success { background: #064e3b; color: #ecfdf5; border: 1px solid #059669; }
     .error { background: #7f1d1d; color: #fef2f2; border: 1px solid #dc2626; }
-    
-    .result-actions { display: flex; gap: 8px; margin-bottom: 10px; }
-    .action-btn { flex: 1; padding: 6px; background: #059669; color: white; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: bold; cursor: pointer; }
-    .short-list-box { max-height: 180px; overflow-y: auto; background: #0f172a; border: 1px solid #334155; border-radius: 6px; padding: 6px; text-align: left; }
-    .short-item { padding: 6px 8px; border-bottom: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; }
+    .short-item { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.9rem; }
     a.short-link { color: #38bdf8; font-weight: bold; text-decoration: none; }
-    .copy-single { background: #334155; border: none; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; cursor: pointer; color: #f8fafc; }
-    .tab-pane { display: none; }
-    .tab-pane.active { display: block; }
+    .copy-btn { background: #334155; border: none; padding: 4px 10px; border-radius: 4px; color: #f8fafc; cursor: pointer; font-size: 0.75rem; }
   </style>
 </head>
 <body>
   <div class="card" id="appContainer">
-    <h2 class="brand-logo">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/>
-      </svg>
-      SHORTCRT
-    </h2>
+    <h2>SHORTCRT</h2>
     
-    <!-- Tab Menu Pemisah -->
-    <div class="tab-container">
-      <button class="tab-btn active" onclick="switchTab('single')" id="tabSingle">🔗 Single URL</button>
-      <button class="tab-btn" onclick="switchTab('bulk')" id="tabBulk">📦 Bulk URL</button>
-    </div>
+    <label>Pilih Domain (Opsional)</label>
+    <select id="selectedDomain">
+      <option value="">Domain Utama (Sesuai GitHub)</option>
+      <option value="mon.croot.site">mon.croot.site</option>
+      <option value="aspn.croot.site">aspn.croot.site</option>
+      <option value="go.croot.site">go.croot.site</option>
+    </select>
 
-    <!-- Pane Single URL -->
-    <div class="tab-pane active" id="paneSingle">
-      <div class="row-group">
-        <div class="form-group">
-          <label>Select Domain</label>
-          <select id="selectedDomainSingle">
-            <option value="">Pilih Domain</option>
-            <option value="mon.croot.site">mon.croot.site</option>
-            <option value="aspn.croot.site">aspn.croot.site</option>
-            <option value="go.croot.site">go.croot.site</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Custom Alias (Opsional)</label>
-          <input type="text" id="customAlias" placeholder="my-brand">
-        </div>
-      </div>
+    <label>Custom Alias (Opsional)</label>
+    <input type="text" id="customAlias" placeholder="alias-unik">
 
-      <div class="form-group">
-        <label>Paste Your Long URL</label>
-        <input type="url" id="longUrlSingle" placeholder="https://...">
-      </div>
-
-      <div class="advanced-toggle" onclick="toggleAdvanced('advancedPanelSingle', 'arrowSingle')">
-        <span>⚙️ Advanced Options</span>
-        <span id="arrowSingle">▼</span>
-      </div>
-
-      <div class="advanced-content" id="advancedPanelSingle">
-        <div class="form-group">
-          <label>Preview Title</label>
-          <input type="text" id="titleSingle" placeholder="Judul kartu...">
-        </div>
-        <div class="form-group">
-          <label>Preview Description</label>
-          <textarea id="descriptionSingle" placeholder="Deskripsi singkat..." style="min-height: 50px;"></textarea>
-        </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label>Image URL</label>
-          <input type="url" id="imageSingle" placeholder="https://...">
-        </div>
-      </div>
-    </div>
-
-    <!-- Pane Bulk URL -->
-    <div class="tab-pane" id="paneBulk">
-      <div class="form-group">
-        <label>Select Domain</label>
-        <select id="selectedDomainBulk">
-          <option value="">Pilih Domain</option>
-          <option value="mon.croot.site">mon.croot.site</option>
-          <option value="aspn.croot.site">aspn.croot.site</option>
-          <option value="go.croot.site">go.croot.site</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Paste Long URLs (1 URL per baris)</label>
-        <textarea id="longUrlBulk" placeholder="https://contoh.com/1&#10;https://contoh.com/2" style="min-height: 100px;"></textarea>
-      </div>
-
-      <div class="advanced-toggle" onclick="toggleAdvanced('advancedPanelBulk', 'arrowBulk')">
-        <span>⚙️ Advanced Options</span>
-        <span id="arrowBulk">▼</span>
-      </div>
-
-      <div class="advanced-content" id="advancedPanelBulk">
-        <div class="form-group">
-          <label>Preview Title (Berlaku untuk semua)</label>
-          <input type="text" id="titleBulk" placeholder="Judul kartu...">
-        </div>
-        <div class="form-group">
-          <label>Preview Description</label>
-          <textarea id="descriptionBulk" placeholder="Deskripsi singkat..." style="min-height: 50px;"></textarea>
-        </div>
-        <div class="form-group" style="margin-bottom: 0;">
-          <label>Image URL</label>
-          <input type="url" id="imageBulk" placeholder="https://...">
-        </div>
-      </div>
-    </div>
+    <label>Paste Long URL</label>
+    <input type="url" id="longUrl" placeholder="https://...">
 
     <button class="btn" onclick="handleCreate()">Create Link</button>
-
     <div id="result"></div>
   </div>
 
   <script>
-    function switchTab(type) {
-      document.getElementById('tabSingle').classList.toggle('active', type === 'single');
-      document.getElementById('tabBulk').classList.toggle('active', type === 'bulk');
-      document.getElementById('paneSingle').classList.toggle('active', type === 'single');
-      document.getElementById('paneBulk').classList.toggle('active', type === 'bulk');
-      document.getElementById('result').style.display = 'none';
-    }
-
-    function toggleAdvanced(panelId, arrowId) {
-      const panel = document.getElementById(panelId);
-      const arrow = document.getElementById(arrowId);
-      panel.classList.toggle('show');
-      arrow.textContent = panel.classList.contains('show') ? '▲' : '▼';
-    }
-
-    // Sistem Redirect & Rotasi Smartlink Otomatis (50:50 antara Anda dan Teman)
+    // Cek apakah halaman sedang diakses sebagai redirect (menggunakan hash/parameter)
     window.addEventListener('DOMContentLoaded', () => {
       const hash = window.location.hash.substring(1);
       if (hash) {
         const dataString = localStorage.getItem('SHORTLINK_' + hash);
         if (dataString) {
-          let linkData;
-          try { linkData = JSON.parse(dataString); } catch(e) { linkData = { longUrl: dataString, title: '', description: '', image: '' }; }
+          let longUrl = dataString;
+          try {
+            const parsed = JSON.parse(dataString);
+            longUrl = parsed.longUrl || dataString;
+          } catch(e) {}
 
-          document.title = linkData.title || 'SHORTCRT - Redirect';
-          
-          const metaTags = document.createElement('div');
-          metaTags.innerHTML = `
-            <meta property="og:title" content="${linkData.title || ''}">
-            <meta property="og:description" content="${linkData.description || ''}">
-            <meta property="og:image" content="${linkData.image || ''}">
-            <meta property="og:url" content="${window.location.href}">
-            <meta property="og:type" content="website">
-            <meta name="twitter:card" content="summary_large_image">
-            <meta name="twitter:title" content="${linkData.title || ''}">
-            <meta name="twitter:description" content="${linkData.description || ''}">
-            <meta name="twitter:image" content="${linkData.image || ''}">
-          `;
-          document.head.append(metaTags);
-
-          // Daftar Smartlink (Milik Anda & Milik Teman)
+          // Rotasi 2 Smartlink
           const adScriptsList = [
-            "https://www.profitableratecpmnetwork.com/hh55phupz7?key=035891703dff41ba6e0911050a5989af", // Punya Anda
-            "https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b"  // Punya Teman
+            "https://www.profitableratecpmnetwork.com/hh55phupz7?key=035891703dff41ba6e0911050a5989af",
+            "https://thewilddetail.com/z02a1bxd?key=f48d1b3a91d0b1fd3db51c3c384a044b"
           ];
-
-          // Pilih secara acak 1 smartlink setiap kali halaman diakses (Rotasi Adil 50:50)
           const randomAdUrl = adScriptsList[Math.floor(Math.random() * adScriptsList.length)];
-
-          // Memuat Script Smartlink yang terpilih secara otomatis
+          
           const adScript = document.createElement('script');
           adScript.src = randomAdUrl;
           document.head.append(adScript);
 
-          // Tampilan Halaman Tunggu dengan Tombol Interaksi & Hitung Mundur
-          document.getElementById('appContainer').innerHTML = `
-            <div style="text-align: center; padding: 25px; font-family: sans-serif;">
+          document.getElementById('appContainer').innerHTML = \`
+            <div style="text-align: center;">
               <h3 style="color: #f8fafc; margin-bottom: 10px;">Menyiapkan Tautan Anda...</h3>
-              <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Silakan tunggu sebentar sebelum diarahkan ke tujuan.</p>
-              
-              <a id="proceedBtn" href="${linkData.longUrl}" style="display: block; width: 100%; padding: 12px; background: #3b82f6; color: white; border-radius: 8px; font-weight: bold; text-decoration: none; box-sizing: border-box; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);">
+              <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Silakan tunggu sebentar...</p>
+              <a id="proceedBtn" href="\${longUrl}" style="display: block; width: 100%; padding: 12px; background: #3b82f6; color: white; border-radius: 8px; font-weight: bold; text-decoration: none; box-sizing: border-box;">
                 Lanjutkan ke Tujuan (<span id="countdown">3</span>)
               </a>
             </div>
-          `;
+          \`;
 
           let timeLeft = 3;
           const countdownEl = document.getElementById('countdown');
@@ -228,106 +92,49 @@
           }, 1000);
 
           proceedBtn.addEventListener('click', function(e) {
-            window.location.href = linkData.longUrl;
+            window.location.href = longUrl;
           });
         }
       }
     });
 
     function handleCreate() {
-      const isBulk = document.getElementById('paneBulk').classList.contains('active');
-      const longUrlInput = isBulk ? document.getElementById('longUrlBulk').value : document.getElementById('longUrlSingle').value;
-      const customAlias = isBulk ? '' : document.getElementById('customAlias').value;
-      const selectedDomain = isBulk ? document.getElementById('selectedDomainBulk').value : document.getElementById('selectedDomainSingle').value;
-      
-      const title = isBulk ? (document.getElementById('titleBulk').value || '') : (document.getElementById('titleSingle').value || '');
-      const description = isBulk ? (document.getElementById('descriptionBulk').value || '') : (document.getElementById('descriptionSingle').value || '');
-      const image = isBulk ? (document.getElementById('imageBulk').value || '') : (document.getElementById('imageSingle').value || '');
-      
+      const longUrl = document.getElementById('longUrl').value;
+      const customAlias = document.getElementById('customAlias').value;
+      const selectedDomain = document.getElementById('selectedDomain').value;
       const resultDiv = document.getElementById('result');
 
       resultDiv.style.display = 'none';
-      resultDiv.className = '';
-
-      if (!longUrlInput) {
+      if (!longUrl) {
         resultDiv.className = 'error';
         resultDiv.style.display = 'block';
         resultDiv.textContent = "Masukkan URL terlebih dahulu.";
         return;
       }
 
-      const lines = longUrlInput.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      let results = [];
-      let baseUrl = selectedDomain ? (selectedDomain.startsWith('http') ? selectedDomain : `https://${selectedDomain}`) : window.location.origin + window.location.pathname;
-
-      if (!isBulk && lines.length === 1 && customAlias) {
-        const longUrl = lines[0];
-        if (!longUrl.startsWith('http')) {
-          resultDiv.className = 'error';
-          resultDiv.style.display = 'block';
-          resultDiv.textContent = "Format URL harus dimulai dengan http:// atau https://";
-          return;
-        }
-
-        let alias = customAlias.trim().replace(/\s+/g, '-');
-        if (localStorage.getItem('SHORTLINK_' + alias)) {
-          resultDiv.className = 'error';
-          resultDiv.style.display = 'block';
-          resultDiv.textContent = "Custom Alias sudah digunakan.";
-          return;
-        }
-
-        const linkData = { longUrl, title, description, image };
-        localStorage.setItem('SHORTLINK_' + alias, JSON.stringify(linkData));
-
-        const shortUrl = `${baseUrl.replace(/\/$/, '')}/#${alias}`;
-        results.push({ shortUrl, alias, longUrl });
-
-      } else {
-        for (let longUrl of lines) {
-          if (!longUrl.startsWith('http')) continue;
-
-          let alias = Math.random().toString(36).substring(2, 8);
-          while (localStorage.getItem('SHORTLINK_' + alias)) {
-            alias = Math.random().toString(36).substring(2, 8);
-          }
-
-          const linkData = { longUrl, title, description, image };
-          localStorage.setItem('SHORTLINK_' + alias, JSON.stringify(linkData));
-
-          const shortUrl = `${baseUrl.replace(/\/$/, '')}/#${alias}`;
-          results.push({ shortUrl, alias, longUrl });
-        }
-      }
-
-      if (results.length === 0) {
+      let alias = customAlias ? customAlias.trim().replace(/\\s+/g, '-') : Math.random().toString(36).substring(2, 8);
+      
+      if (localStorage.getItem('SHORTLINK_' + alias)) {
         resultDiv.className = 'error';
         resultDiv.style.display = 'block';
-        resultDiv.textContent = "Tidak ada URL valid yang berhasil diproses.";
+        resultDiv.textContent = "Custom alias sudah digunakan, pilih yang lain.";
         return;
       }
 
+      localStorage.setItem('SHORTLINK_' + alias, longUrl);
+
+      let baseUrl = selectedDomain ? (selectedDomain.startsWith('http') ? selectedDomain : 'https://' + selectedDomain) : window.location.origin + window.location.pathname;
+      let shortUrl = baseUrl.replace(/\\/$/, '') + '/#' + alias;
+
       resultDiv.className = 'success';
       resultDiv.style.display = 'block';
-      
-      let htmlContent = `<div class="result-actions"><button class="action-btn" onclick="copyAll()">Copy All</button></div><div class="short-list-box">`;
-      results.forEach(res => {
-        htmlContent += `<div class="short-item">
-          <a class="short-link" href="${res.shortUrl}" target="_blank">${res.shortUrl}</a>
-          <button class="copy-single" onclick="navigator.clipboard.writeText('${res.shortUrl}')">Copy</button>
-        </div>`;
-      });
-      htmlContent += `</div>`;
-      
-      resultDiv.innerHTML = htmlContent;
-      window.lastResults = results;
-    }
-
-    function copyAll() {
-      if (!window.lastResults) return;
-      const text = window.lastResults.map(r => r.shortUrl).join('\n');
-      navigator.clipboard.writeText(text);
-      alert('Semua shortlink berhasil disalin!');
+      resultDiv.innerHTML = \`
+        <div>Tautan Berhasil Dibuat:</div>
+        <div class="short-item">
+          <a class="short-link" href="\${shortUrl}" target="_blank">\${shortUrl}</a>
+          <button class="copy-btn" onclick="navigator.clipboard.writeText('\${shortUrl}')">Copy</button>
+        </div>
+      \`;
     }
   </script>
 </body>
