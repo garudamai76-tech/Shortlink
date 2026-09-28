@@ -74,7 +74,7 @@
   </div>
 
   <script>
-    const passwordSaya = "Bobby12345"; // Ubah password di sini jika ingin
+    const passwordSaya = "Bobby12345";
 
     function cekPassword() {
       const passVal = document.getElementById('inputPassword').value;
@@ -227,9 +227,7 @@
         });
 
         if (totalSukses > 0) {
-          // Gabungkan semua link dengan baris baru (\n) untuk tombol Salin Semua
           const semuaLinkTeks = daftarHasilArray.join('\n');
-          
           boxRes.className = 'box-success';
           boxRes.style.display = 'block';
           boxRes.innerHTML = `
