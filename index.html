@@ -25,40 +25,76 @@
   </style>
 </head>
 <body>
-  <div class="card" id="appMain">
-    <h2>SHORTCRT</h2>
+  <div class="card" id="appContainer">
     
-    <!-- TOMBOL TAB MENU (SINGLE & BULK) -->
-    <div class="menu-tabs">
-      <div id="tSingle" class="btn-tab active" onclick="changeTab('single')">🔗 Single URL</div>
-      <div id="tBulk" class="btn-tab" onclick="changeTab('bulk')">📦 Bulk URL</div>
+    <!-- KOTAK LOGIN PASSWORD -->
+    <div id="loginBox">
+      <h2>SHORTCRT Login</h2>
+      <label>Masukkan Password Akses</label>
+      <input type="password" id="inputPassword" placeholder="Password...">
+      <button class="main-btn" onclick="cekPassword()">Masuk</button>
+      <div id="loginError" style="color: #fca5a5; font-size: 0.85rem; margin-top: 10px; text-align: center; display: none;">Password salah!</div>
     </div>
 
-    <label>Pilih Domain</label>
-    <select id="domainChoice">
-      <option value="">Domain Utama (GitHub)</option>
-      <option value="mon.croot.site">mon.croot.site</option>
-      <option value="aspn.croot.site">aspn.croot.site</option>
-      <option value="go.croot.site">go.croot.site</option>
-    </select>
+    <!-- PANEL UTAMA (DISEMBUNYIKAN SEBELUM LOGIN) -->
+    <div id="appMain" style="display: none;">
+      <h2>SHORTCRT</h2>
+      
+      <!-- TOMBOL TAB MENU (SINGLE & BULK) -->
+      <div class="menu-tabs">
+        <div id="tSingle" class="btn-tab active" onclick="changeTab('single')">🔗 Single URL</div>
+        <div id="tBulk" class="btn-tab" onclick="changeTab('bulk')">📦 Bulk URL</div>
+      </div>
 
-    <div id="formSingle">
-      <label>Custom Alias (Opsional)</label>
-      <input type="text" id="inputAlias" placeholder="alias-unik">
-      <label>Paste Long URL</label>
-      <input type="url" id="inputUrl" placeholder="https://...">
+      <label>Pilih Domain</label>
+      <select id="domainChoice">
+        <option value="">Domain Utama (GitHub)</option>
+        <option value="mon.croot.site">mon.croot.site</option>
+        <option value="aspn.croot.site">aspn.croot.site</option>
+        <option value="go.croot.site">go.croot.site</option>
+      </select>
+
+      <div id="formSingle">
+        <label>Custom Alias (Opsional)</label>
+        <input type="text" id="inputAlias" placeholder="alias-unik">
+        <label>Paste Long URL</label>
+        <input type="url" id="inputUrl" placeholder="https://...">
+      </div>
+
+      <div id="formBulk" style="display: none;">
+        <label>Paste Long URLs (1 URL per baris)</label>
+        <textarea id="inputBulkUrls" placeholder="https://contoh.com/1&#10;https://contoh.com/2"></textarea>
+      </div>
+
+      <button class="main-btn" onclick="generateLink()">Create Link</button>
+      <div id="resultBox"></div>
     </div>
 
-    <div id="formBulk" style="display: none;">
-      <label>Paste Long URLs (1 URL per baris)</label>
-      <textarea id="inputBulkUrls" placeholder="https://contoh.com/1&#10;https://contoh.com/2"></textarea>
-    </div>
-
-    <button class="main-btn" onclick="generateLink()">Create Link</button>
-    <div id="resultBox"></div>
   </div>
 
   <script>
+    // ==========================================
+    // UBAH PASSWORD DI BAWAH INI SESUAI KEINGINAN
+    // ==========================================
+    const passwordSaya = "bobby12345";
+
+    function cekPassword() {
+      const passVal = document.getElementById('inputPassword').value;
+      const errBox = document.getElementById('loginError');
+
+      if (passVal === passwordSaya) {
+        sessionStorage.setItem('shortcrt_logged', 'true');
+        tampilkanAplikasi();
+      } else {
+        errBox.style.display = 'block';
+      }
+    }
+
+    function tampilkanAplikasi() {
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('appMain').style.display = 'block';
+    }
+
     let modeAktif = 'single';
 
     function changeTab(tipe) {
@@ -72,6 +108,8 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const hashKey = window.location.hash.substring(1);
+      
+      // Jika ada hash link (pengunjung membuka hasil shortlink), langsung jalankan iklan & redirect
       if (hashKey) {
         const dataSimpan = localStorage.getItem('SHORTLINK_' + hashKey);
         if (dataSimpan) {
@@ -82,14 +120,15 @@
           } catch(e) {}
 
           const adList = [
-            "https://www.profitableratecpmnetwork.com/hh55phupz7?key=035891703dff41ba6e0911050a5989a"];
+            "https://www.profitableratecpmnetwork.com/hh55phupz7?key=035891703dff41ba6e0911050a5989a"
+          ];
           const pilihIklan = adList[Math.floor(Math.random() * adList.length)];
           
           const scr = document.createElement('script');
           scr.src = pilihIklan;
           document.head.append(scr);
 
-          document.getElementById('appMain').innerHTML = `
+          document.getElementById('appContainer').innerHTML = `
             <div style="text-align: center;">
               <h3 style="color: #f8fafc; margin-bottom: 10px;">Menyiapkan Tautan Anda...</h3>
               <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Silakan tunggu sebentar...</p>
@@ -118,6 +157,12 @@
             window.location.href = tujuanUrl;
           });
         }
+        return;
+      }
+
+      // Jika membuka halaman utama (dashboard), cek apakah sudah login di sesi ini
+      if (sessionStorage.getItem('shortcrt_logged') === 'true') {
+        tampilkanAplikasi();
       }
     });
 
