@@ -22,6 +22,8 @@
     .link-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font-size: 0.9rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px; }
     a.link-url { color: #38bdf8; font-weight: bold; text-decoration: none; }
     .btn-copy { background: #334155; border: none; padding: 4px 10px; border-radius: 4px; color: #f8fafc; cursor: pointer; font-size: 0.75rem; flex-shrink: 0; margin-left: 8px; }
+    .btn-copy-all { background: #059669; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: bold; margin-bottom: 10px; width: 100%; }
+    .btn-copy-all:hover { background: #047857; }
   </style>
 </head>
 <body>
@@ -36,11 +38,10 @@
       <div id="loginError" style="color: #fca5a5; font-size: 0.85rem; margin-top: 10px; text-align: center; display: none;">Password salah!</div>
     </div>
 
-    <!-- PANEL UTAMA (DISEMBUNYIKAN SEBELUM LOGIN) -->
+    <!-- PANEL UTAMA -->
     <div id="appMain" style="display: none;">
       <h2>SHORTCRT</h2>
       
-      <!-- TOMBOL TAB MENU (SINGLE & BULK) -->
       <div class="menu-tabs">
         <div id="tSingle" class="btn-tab active" onclick="changeTab('single')">🔗 Single URL</div>
         <div id="tBulk" class="btn-tab" onclick="changeTab('bulk')">📦 Bulk URL</div>
@@ -73,10 +74,7 @@
   </div>
 
   <script>
-    // ==========================================
-    // UBAH PASSWORD DI BAWAH INI SESUAI KEINGINAN
-    // ==========================================
-    const passwordSaya = "bobby12345";
+    const passwordSaya = "Bobby12345"; // Ubah password di sini jika ingin
 
     function cekPassword() {
       const passVal = document.getElementById('inputPassword').value;
@@ -109,7 +107,6 @@
     window.addEventListener('DOMContentLoaded', () => {
       const hashKey = window.location.hash.substring(1);
       
-      // Jika ada hash link (pengunjung membuka hasil shortlink), langsung jalankan iklan & redirect
       if (hashKey) {
         const dataSimpan = localStorage.getItem('SHORTLINK_' + hashKey);
         if (dataSimpan) {
@@ -160,7 +157,6 @@
         return;
       }
 
-      // Jika membuka halaman utama (dashboard), cek apakah sudah login di sesi ini
       if (sessionStorage.getItem('shortcrt_logged') === 'true') {
         tampilkanAplikasi();
       }
@@ -208,6 +204,7 @@
         }
 
         const barisList = teksBulk.split('\n');
+        let daftarHasilArray = [];
         let htmlRakit = '<div style="margin-bottom: 8px; font-weight: bold;">Daftar Berhasil Dibuat:</div>';
         let totalSukses = 0;
 
@@ -218,6 +215,7 @@
             localStorage.setItem('SHORTLINK_' + aliasRandom, u);
             let hasilShort = baseDomain + '/#' + aliasRandom;
             
+            daftarHasilArray.push(hasilShort);
             htmlRakit += `
               <div class="link-row">
                 <a class="link-url" href="${hasilShort}" target="_blank">${hasilShort}</a>
@@ -229,9 +227,15 @@
         });
 
         if (totalSukses > 0) {
+          // Gabungkan semua link dengan baris baru (\n) untuk tombol Salin Semua
+          const semuaLinkTeks = daftarHasilArray.join('\n');
+          
           boxRes.className = 'box-success';
           boxRes.style.display = 'block';
-          boxRes.innerHTML = htmlRakit;
+          boxRes.innerHTML = `
+            <button class="btn-copy-all" onclick="navigator.clipboard.writeText(\`${semuaLinkTeks}\`)">📋 Salin Semua Link</button>
+            ${htmlRakit}
+          `;
         }
       }
     }
